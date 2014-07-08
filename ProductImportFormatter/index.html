@@ -1,0 +1,147 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Product Content Formatter</title>
+    <script type="text/javascript" src="http://tinymce.cachefly.net/4.1/tinymce.min.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script type="text/javascript" src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/ZeroClipboard.min.js"></script>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="/octicons/octicons.css" /> <!--https://octicons.github.com/-->
+    <link rel="stylesheet" href="css/style.css" />
+    <script>
+
+        /* Initialize TinyMCE
+        Documentation: http://www.tinymce.com/wiki.php/Configuration
+        Examples: http://www.tinymce.com/tryit/basic.php
+        Toolbar commands: http://www.tinymce.com/wiki.php/Controls
+        */
+        tinymce.init({
+            selector: "#productEditor",
+            theme: "modern",
+            height: 150,
+            plugins: [
+                "advlist autolink lists link image charmap preview hr anchor pagebreak",
+                "searchreplace wordcount visualblocks visualchars code fullscreen",
+                "insertdatetime media nonbreaking save table contextmenu directionality",
+                "template paste textcolor colorpicker textpattern"
+            ],
+            toolbar1: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | preview",
+            toolbar2: "forecolor backcolor | link image media | template",
+            image_advtab: true,
+            templates: [
+                { title: '3 bullets', content: '<ul><li>bullet 1</li><li>bullet 2</li><li>bullet 3</li></ul>' }
+            ]
+        });
+
+        //Page methods
+        $(document).ready(function () {
+
+            //Initialization
+            $('#divCopySuccess').hide();
+
+            //prepare the copy to clipboard function
+            // https://github.com/zeroclipboard/zeroclipboard
+            var client = new ZeroClipboard($('#btnGetOutput'));
+            client.on('ready', function (event) {
+
+                //event that handles the copying to the clipboard
+                client.on('copy', function (event) {
+                    $('#txtOutput').val(tinyMCE.get('productEditor').getContent());
+                    var data = $('#txtOutput').val();
+                    event.clipboardData.setData('text/plain', data);
+                });
+
+                //event that triggers after the copy event
+                client.on('aftercopy', function (event) {
+                    //show the successful copy alert
+                    $('#divCopySuccess').show();
+
+                    //automatically dismiss the alert after 1.5 seconds
+                    window.setTimeout(function () {
+                        $('#divCopySuccess').hide();
+                    }, 1500);
+                });
+            });
+
+            //error handler
+            client.on('error', function (event) {
+                console.log( 'ZeroClipboard error of type "' + event.name + '": ' + event.message );
+                ZeroClipboard.destroy();
+            });
+
+        });
+
+        function reset() {
+            location.reload();
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        
+        <div class="page-header">
+            <div class="row">
+                <div class="col-md-10">
+                    <h1>Product Content Formatter</h1>
+                </div>
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-info btn-block" data-toggle="collapse" data-target="#divHelp">
+                        <span class="glyphicon glyphicon-question-sign"></span> Help
+                    </button>
+                </div>
+            </div>
+
+            <div id="divHelp" class="collapse well">
+                <h2>Instructions</h2>
+                <ol>
+                    <li>Compose the content in the editor below</li>
+                    <li>Press "Copy to Clipboard" to automatically copy the HTML content to the clipboard</li>
+                    <li>Go to the Excel sheet for the product import and paste the HTML into the field using Ctrl+V</li>
+                </ol>
+            </div>
+        </div>
+
+        <div id="divInput" class="row">
+            <div class="col-md-12">
+                <textarea id="productEditor"></textarea>
+            </div>
+        </div>
+
+        <div id="divOutput" class="row">
+            <div class="col-md-3">
+                <button id="btnGetOutput" type="button" class="btn btn-primary btn-block btn-lg">
+                    <span class="octicon octicon-clippy" style="font-size: 22px;"></span> Copy to Clipboard
+                </button>
+            </div>
+            <div class="col-md-6">
+                <div id="divCopySuccess" class="alert alert-success alert-dismissible" role="alert">
+                    <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <Strong>Copied</Strong> to clipboard!
+                </div>
+            </div>
+            <div class="col-md-3">
+                <button id="btnReset" type="button" class="btn btn-danger btn-block btn-lg" onclick="reset();">
+                    <span class="glyphicon glyphicon-refresh"></span> Reset
+                </button>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <input id="txtOutput" type="text" class="form-control invisible" readonly="readonly" />
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        <p class="text-center">
+            <small>
+                &copy; <script>document.write(new Date().getFullYear())</script> - Matthew Hancock
+            </small>
+        </p>
+    </footer>
+</body>
+</html>

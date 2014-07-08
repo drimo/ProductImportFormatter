@@ -1,0 +1,26 @@
+﻿body {
+}
+
+#divInput {
+}
+
+#divOutput {
+    padding-top: 20px;
+}
+
+#divCopySuccess {
+    margin-bottom: 0px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+#txtOutput {
+}
+
+.page-header {
+    margin-top: 0px;
+}
+
+.page-header h1 {
+    margin-top: 0px;
+}
