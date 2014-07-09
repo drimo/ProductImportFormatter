@@ -1,14 +1,15 @@
 ﻿body {
 }
 
-#divInput {
-}
-
-#divOutput {
+.inputRow {
     padding-top: 20px;
 }
 
-#divCopySuccess {
+.outputRow {
+    padding-top: 20px;
+}
+
+#divCopySuccess, #divCatCopySuccess {
     margin-bottom: 0px;
     padding-top: 10px;
     padding-bottom: 10px;

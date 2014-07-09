@@ -6,9 +6,11 @@
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script type="text/javascript" src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="js/ZeroClipboard.min.js"></script>
+    <script type="text/javascript" src="sumoselect/jquery.sumoselect.min.js"></script>
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
-    <link rel="stylesheet" href="/octicons/octicons.css" /> <!--https://octicons.github.com/-->
+    <link rel="stylesheet" href="octicons/octicons.css" /> <!--https://octicons.github.com/-->
+    <link rel="stylesheet" href="sumoselect/sumoselect.css" />
     <link rel="stylesheet" href="css/style.css" />
     <script>
 
@@ -40,6 +42,13 @@
 
             //Initialization
             $('#divCopySuccess').hide();
+            $('#divCatCopySuccess').hide();
+            $('.SlectBox').SumoSelect({
+                placeholder: 'Select Multiple...',
+                outputAsCSV: true,
+                csvSepChar: '|',
+                okCancelInMulti: true
+            });
 
             //prepare the copy to clipboard function
             // https://github.com/zeroclipboard/zeroclipboard
@@ -65,9 +74,34 @@
                 });
             });
 
+            var catClient = new ZeroClipboard($('#btnGetCategoryList'));
+            catClient.on('ready', function (event) {
+
+                //event that handles the copying to the clipboard
+                catClient.on('copy', function (event) {
+                    var data = $('#selPrimaryCategory').val();
+                    var additional = $('select.SlectBox')[0].sumo.getSelStr();
+                    if (additional) {
+                        data = data + '|' + additional;
+                    }
+                    event.clipboardData.setData('text/plain', data);
+                });
+
+                //event that triggers after the copy event
+                catClient.on('aftercopy', function (event) {
+                    //show the successful copy alert
+                    $('#divCatCopySuccess').show();
+
+                    //automatically dismiss the alert after 1.5 seconds
+                    window.setTimeout(function () {
+                        $('#divCatCopySuccess').hide();
+                    }, 1500);
+                });
+            });
+
             //error handler
             client.on('error', function (event) {
-                console.log( 'ZeroClipboard error of type "' + event.name + '": ' + event.message );
+                console.log('ZeroClipboard error of type "' + event.name + '": ' + event.message);
                 ZeroClipboard.destroy();
             });
 
@@ -76,11 +110,12 @@
         function reset() {
             location.reload();
         }
+
     </script>
 </head>
 <body>
     <div class="container">
-        
+
         <div class="page-header">
             <div class="row">
                 <div class="col-md-10">
@@ -94,52 +129,128 @@
             </div>
 
             <div id="divHelp" class="collapse well">
-                <h2>Instructions</h2>
+                <h2>Instructions for Content</h2>
                 <ol>
                     <li>Compose the content in the editor below</li>
                     <li>Press "Copy to Clipboard" to automatically copy the HTML content to the clipboard</li>
                     <li>Go to the Excel sheet for the product import and paste the HTML into the field using Ctrl+V</li>
                 </ol>
+                <h2>Instructions for Categories</h2>
+                <ol>
+                    <li>Select the primary category from the list</li>
+                    <li>If the product will have additional categories, select multiple categories from the "Additional Categories" list</li>
+                    <li>Press "Copy to Clipboard" to automatically copy the selected categories to the clipboard</li>
+                    <li>Go to the Excel sheet for the product import and paste into the CategoryList field using Ctrl+V</li>
+                </ol>
             </div>
         </div>
 
-        <div id="divInput" class="row">
-            <div class="col-md-12">
-                <textarea id="productEditor"></textarea>
-            </div>
-        </div>
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" role="tablist">
+            <li class="active"><a href="#content" role="tab" data-toggle="tab">Content</a></li>
+            <li><a href="#categories" role="tab" data-toggle="tab">Categories</a></li>
+        </ul>
 
-        <div id="divOutput" class="row">
-            <div class="col-md-3">
-                <button id="btnGetOutput" type="button" class="btn btn-primary btn-block btn-lg">
-                    <span class="octicon octicon-clippy" style="font-size: 22px;"></span> Copy to Clipboard
-                </button>
-            </div>
-            <div class="col-md-6">
-                <div id="divCopySuccess" class="alert alert-success alert-dismissible" role="alert">
-                    <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                    <Strong>Copied</Strong> to clipboard!
+        <!-- Tab panes -->
+        <div class="tab-content">
+            
+            <div class="tab-pane active" id="content">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <textarea id="productEditor"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="row outputRow">
+                            <div class="col-md-3">
+                                <button id="btnGetOutput" type="button" class="btn btn-primary btn-block btn-lg">
+                                    <span class="octicon octicon-clippy" style="font-size: 22px;"></span> Copy to Clipboard
+                                </button>
+                            </div>
+                            <div class="col-md-6">
+                                <div id="divCopySuccess" class="alert alert-success alert-dismissible" role="alert">
+                                    <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                    <strong>Copied</strong> to clipboard!
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <button id="btnReset" type="button" class="btn btn-danger btn-block btn-lg" onclick="reset();">
+                                    <span class="glyphicon glyphicon-refresh"></span> Reset
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <input id="txtOutput" type="text" class="form-control invisible" readonly="readonly" />
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <button id="btnReset" type="button" class="btn btn-danger btn-block btn-lg" onclick="reset();">
-                    <span class="glyphicon glyphicon-refresh"></span> Reset
-                </button>
+            
+            <div class="tab-pane" id="categories">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+
+                        <div class="row">
+                            <div class="col-md-2">
+                                <label for="selPrimaryCategory">Primary Category</label>
+                            </div>
+                            <div class="col-md-10">
+                                <select id="selPrimaryCategory" class="form-control">
+                                    <option value="BMW">BMW</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row inputRow">
+                            <div class="col-md-2">
+                                <label for="selAdditionalCategories">Additional Categories</label>
+                            </div>
+                            <div class="col-md-10">
+                                <select id="selAdditionalCategories" class="SlectBox form-control" multiple="multiple">
+                                    <option value="Volvo">Volvo</option>
+                                    <option value="Saab">Saab</option>
+                                    <option value="Mercedes">Mercedes</option>
+                                    <option value="Audi">Audi</option>
+                                    <option value="BMW">BMW</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row outputRow">
+                            <div class="col-md-2">
+
+                            </div>
+                            <div class="col-md-4">
+                                <button id="btnGetCategoryList" type="button" class="btn btn-primary btn-block btn-lg">
+                                    <span class="octicon octicon-clippy" style="font-size: 22px;"></span> Copy to Clipboard
+                                </button>
+                            </div>
+                            <div class="col-md-6">
+                                <div id="divCatCopySuccess" class="alert alert-success alert-dismissible" role="alert">
+                                    <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                    <strong>Copied</strong> to clipboard!
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
             </div>
         </div>
-
-        <div class="row">
-            <div class="col-md-12">
-                <input id="txtOutput" type="text" class="form-control invisible" readonly="readonly" />
-            </div>
-        </div>
-
     </div>
 
-    <footer>
+    <footer class="hidden">
         <p class="text-center">
             <small>
-                &copy; <script>document.write(new Date().getFullYear())</script> - Matthew Hancock
+                &copy;
+                <script>document.write(new Date().getFullYear())</script> - Matthew Hancock
             </small>
         </p>
     </footer>
