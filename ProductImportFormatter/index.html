@@ -7,6 +7,7 @@
     <script type="text/javascript" src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="js/ZeroClipboard.min.js"></script>
     <script type="text/javascript" src="sumoselect/jquery.sumoselect.min.js"></script>
+    <script type="text/javascript" src="js/Categories.js"></script>
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
     <link rel="stylesheet" href="octicons/octicons.css" /> <!--https://octicons.github.com/-->
@@ -43,6 +44,7 @@
             //Initialization
             $('#divCopySuccess').hide();
             $('#divCatCopySuccess').hide();
+            loadCategories();
             $('.SlectBox').SumoSelect({
                 placeholder: 'Select Multiple...',
                 outputAsCSV: true,
@@ -109,6 +111,15 @@
 
         function reset() {
             location.reload();
+        };
+
+        function loadCategories() {
+            if (categories) {
+                $.each(categories, function (i, value) {
+                    $('#selPrimaryCategory').append($('<option>').text(value).attr('value', value));
+                    $('#selAdditionalCategories').append($('<option>').text(value).attr('value', value));
+                });
+            }
         }
 
     </script>
@@ -203,7 +214,6 @@
                             </div>
                             <div class="col-md-10">
                                 <select id="selPrimaryCategory" class="form-control">
-                                    <option value="BMW">BMW</option>
                                 </select>
                             </div>
                         </div>
@@ -214,11 +224,6 @@
                             </div>
                             <div class="col-md-10">
                                 <select id="selAdditionalCategories" class="SlectBox form-control" multiple="multiple">
-                                    <option value="Volvo">Volvo</option>
-                                    <option value="Saab">Saab</option>
-                                    <option value="Mercedes">Mercedes</option>
-                                    <option value="Audi">Audi</option>
-                                    <option value="BMW">BMW</option>
                                 </select>
                             </div>
                         </div>

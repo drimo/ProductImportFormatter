@@ -57,6 +57,7 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="js\Categories.js" />
     <Content Include="octicons\octicons-local.ttf" />
     <Content Include="octicons\octicons.eot" />
     <Content Include="octicons\octicons.less" />
