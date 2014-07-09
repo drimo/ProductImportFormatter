@@ -45,12 +45,7 @@
             $('#divCopySuccess').hide();
             $('#divCatCopySuccess').hide();
             loadCategories();
-            $('.SlectBox').SumoSelect({
-                placeholder: 'Select Multiple...',
-                outputAsCSV: true,
-                csvSepChar: '|',
-                okCancelInMulti: true
-            });
+            loadSumoSelect();
 
             //prepare the copy to clipboard function
             // https://github.com/zeroclipboard/zeroclipboard
@@ -113,6 +108,13 @@
             location.reload();
         };
 
+        function categoryReset() {
+            $("#selPrimaryCategory").val("");
+            $('select.SlectBox')[0].sumo.unload();
+            $('#selAdditionalCategories').val([]);
+            loadSumoSelect();
+        }
+
         function loadCategories() {
             if (categories) {
                 $.each(categories, function (i, value) {
@@ -120,6 +122,19 @@
                     $('#selAdditionalCategories').append($('<option>').text(value).attr('value', value));
                 });
             }
+        }
+
+        function loadSumoSelect() {
+            /* SumoSelect
+            Documentation: http://hemantnegi.github.io/jquery.sumoselect/
+            Demos: http://hemantnegi.github.io/jquery.sumoselect/sumoselect_demo.html
+            */
+            $('.SlectBox').SumoSelect({
+                placeholder: 'Select Multiple...',
+                outputAsCSV: true,
+                csvSepChar: '|',
+                okCancelInMulti: true
+            });
         }
 
     </script>
@@ -149,7 +164,7 @@
                 <h2>Instructions for Categories</h2>
                 <ol>
                     <li>Select the primary category from the list</li>
-                    <li>If the product will have additional categories, select multiple categories from the "Additional Categories" list</li>
+                    <li>If the product will have additional categories, select multiple categories from the "Additional Categories" list and press OK to confirm the selection</li>
                     <li>Press "Copy to Clipboard" to automatically copy the selected categories to the clipboard</li>
                     <li>Go to the Excel sheet for the product import and paste into the CategoryList field using Ctrl+V</li>
                 </ol>
@@ -214,6 +229,7 @@
                             </div>
                             <div class="col-md-10">
                                 <select id="selPrimaryCategory" class="form-control">
+                                    <option value="">Select ...</option>
                                 </select>
                             </div>
                         </div>
@@ -232,16 +248,21 @@
                             <div class="col-md-2">
 
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <button id="btnGetCategoryList" type="button" class="btn btn-primary btn-block btn-lg">
                                     <span class="octicon octicon-clippy" style="font-size: 22px;"></span> Copy to Clipboard
                                 </button>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div id="divCatCopySuccess" class="alert alert-success alert-dismissible" role="alert">
                                     <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                                     <strong>Copied</strong> to clipboard!
                                 </div>
+                            </div>
+                            <div class="col-md-3">
+                                <button id="btnCategoryReset" type="button" class="btn btn-danger btn-block btn-lg" onclick="categoryReset();">
+                                    <span class="glyphicon glyphicon-refresh"></span> Reset
+                                </button>
                             </div>
                         </div>
 
