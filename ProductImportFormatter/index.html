@@ -35,7 +35,8 @@
             image_advtab: true,
             templates: [
                 { title: '3 bullets', content: '<ul><li>bullet 1</li><li>bullet 2</li><li>bullet 3</li></ul>' }
-            ]
+            ],
+            paste_as_text: true
         });
 
         //Page methods
@@ -105,7 +106,7 @@
         });
 
         function reset() {
-            location.reload();
+            tinyMCE.get('productEditor').setContent("");
         };
 
         function categoryReset() {
