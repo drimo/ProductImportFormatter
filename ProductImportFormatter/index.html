@@ -7,7 +7,6 @@
     <script type="text/javascript" src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="js/ZeroClipboard.min.js"></script>
     <script type="text/javascript" src="sumoselect/jquery.sumoselect.min.js"></script>
-    <script type="text/javascript" src="js/Categories.js"></script>
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
     <link rel="stylesheet" href="octicons/octicons.css" /> <!--https://octicons.github.com/-->
@@ -46,7 +45,6 @@
             $('#divCopySuccess').hide();
             $('#divCatCopySuccess').hide();
             loadCategories();
-            loadSumoSelect();
 
             //prepare the copy to clipboard function
             // https://github.com/zeroclipboard/zeroclipboard
@@ -117,12 +115,17 @@
         }
 
         function loadCategories() {
-            if (categories) {
+            $.getJSON("categories/getCategories.php", function (result) {
+                var categories = result.Categories;
                 $.each(categories, function (i, value) {
-                    $('#selPrimaryCategory').append($('<option>').text(value).attr('value', value));
-                    $('#selAdditionalCategories').append($('<option>').text(value).attr('value', value));
+                    $('#selPrimaryCategory').append($('<option>').text(value.CategoryList).attr('value', value.CategoryList));
+                    $('#selAdditionalCategories').append($('<option>').text(value.CategoryList).attr('value', value.CategoryList));
                 });
-            }
+                loadSumoSelect();
+            })
+            .error(function (data) {
+                console.log("Error!");
+            });
         }
 
         function loadSumoSelect() {
@@ -176,6 +179,7 @@
         <ul class="nav nav-tabs" role="tablist">
             <li class="active"><a href="#content" role="tab" data-toggle="tab">Content</a></li>
             <li><a href="#categories" role="tab" data-toggle="tab">Categories</a></li>
+            <li><a href="categories/import.php" role="tab">Import Categories</a></li>
         </ul>
 
         <!-- Tab panes -->
