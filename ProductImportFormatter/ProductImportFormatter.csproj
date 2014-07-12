@@ -67,10 +67,6 @@
     <Content Include="octicons\sprockets-octicons.scss" />
     <Content Include="js\ZeroClipboard.Core.min.map" />
     <Content Include="js\ZeroClipboard.min.map" />
-    <Content Include="categories\delete.php" />
-    <Content Include="categories\edit.php" />
-    <Content Include="categories\list.php" />
-    <Content Include="categories\new.php" />
     <Content Include="categories\config.php" />
     <Content Include="categories\getCategories.php" />
     <Content Include="categories\import.php" />
