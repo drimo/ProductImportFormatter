@@ -40,26 +40,31 @@
                 <div class="row">
                     <div class="col-md-12">
                         <?php
-							//http://coyotelab.org/php/upload-csv-and-insert-into-database-using-phpmysql.html
-							include('config.php');  //Connect to Database
-
-							$deleterecords = "TRUNCATE TABLE Categories"; //empty the table of its current records
-							mysql_query($deleterecords);
-
 							//Upload File
 							if (isset($_POST['submit'])) {
-								//Import uploaded file to Database
-								$handle = fopen($_FILES['filename']['tmp_name'], "r");
 
-								while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-									$import="INSERT into Categories(CategoryId,CategoryList) values('$data[0]','$data[10]')";
+								if(!file_exists($_FILES['filename']['tmp_name']) || !is_uploaded_file($_FILES['filename']['tmp_name'])) {
+									print "<div class='alert alert-danger' role='alert'>No file selected</div>";
+								} else {
+									//http://coyotelab.org/php/upload-csv-and-insert-into-database-using-phpmysql.html
+									include('config.php');  //Connect to Database
 
-									mysql_query($import) or die(mysql_error());
+									$deleterecords = "TRUNCATE TABLE Categories"; //empty the table of its current records
+									mysql_query($deleterecords);
+
+									//Import uploaded file to Database
+									$handle = fopen($_FILES['filename']['tmp_name'], "r");
+
+									while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+										$import="INSERT into Categories(CategoryId,CategoryList) values('$data[0]','$data[10]')";
+
+										mysql_query($import) or die(mysql_error());
+									}
+
+									fclose($handle);
+
+									print "<div class='alert alert-success' role='alert'>Imported successfully</div>";
 								}
-
-								fclose($handle);
-
-								print "<div class='alert alert-success' role='alert'>Imported successfully</div>";
 
 								//view upload form
 							}else {
