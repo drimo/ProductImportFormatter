@@ -57,6 +57,8 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="css\bootstrap-multiselect.css" />
+    <Content Include="js\bootstrap-multiselect.js" />
     <Content Include="js\Categories.js" />
     <Content Include="octicons\octicons-local.ttf" />
     <Content Include="octicons\octicons.eot" />

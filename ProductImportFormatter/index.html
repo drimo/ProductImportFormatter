@@ -6,10 +6,12 @@
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script type="text/javascript" src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="js/ZeroClipboard.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap-multiselect.js"></script>
     <script type="text/javascript" src="sumoselect/jquery.sumoselect.min.js"></script>
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
     <link rel="stylesheet" href="octicons/octicons.css" /> <!--https://octicons.github.com/-->
+    <link rel="stylesheet" href="css/bootstrap-multiselect.css" />
     <link rel="stylesheet" href="sumoselect/sumoselect.css" />
     <link rel="stylesheet" href="css/style.css" />
     <script>
@@ -44,7 +46,6 @@
             //Initialization
             $('#divCopySuccess').hide();
             $('#divCatCopySuccess').hide();
-            loadCategories();
 
             //prepare the copy to clipboard function
             // https://github.com/zeroclipboard/zeroclipboard
@@ -75,11 +76,11 @@
 
                 //event that handles the copying to the clipboard
                 catClient.on('copy', function (event) {
-                    var data = $('#selPrimaryCategory').val();
-                    var additional = $('select.SlectBox')[0].sumo.getSelStr();
-                    if (additional) {
-                        data = data + '|' + additional;
-                    }
+                    var data = $('#ddlPrimaryCat').val()[0];
+                    //var additional = $('select.SlectBox')[0].sumo.getSelStr();
+                    //if (additional) {
+                    //    data = data + '|' + additional;
+                    //}
                     event.clipboardData.setData('text/plain', data);
                 });
 
@@ -101,27 +102,59 @@
                 ZeroClipboard.destroy();
             });
 
+            $('#ddlPrimaryCat').multiselect({
+                buttonWidth: '100%',
+                maxHeight: 300,
+                enableFiltering: true,
+                enableCaseInsensitiveFiltering: true,
+                filterPlaceholder: 'Search',
+                onChange: function (option, checked) {
+                    var values = [];
+                    $('#ddlPrimaryCat option').each(function () {
+                        if ($(this).val() !== option.val()) {
+                            values.push($(this).val());
+                        }
+                    });
+
+                    $('#ddlPrimaryCat').multiselect('deselect', values);
+                }
+            });
+
+            loadCategories();
+            
+
+
         });
+
+        function multiselect_deselectAll($el) {
+            $('option', $el).each(function (element) {
+                $el.multiselect('deselect', $(this).val());
+            });
+        };
 
         function reset() {
             tinyMCE.get('productEditor').setContent("");
         };
 
         function categoryReset() {
-            $("#selPrimaryCategory").val("");
-            $('select.SlectBox')[0].sumo.unload();
-            $('#selAdditionalCategories').val([]);
-            loadSumoSelect();
+            multiselect_deselectAll($('#ddlPrimaryCat'));
+            
+            //$('select.SlectBox')[0].sumo.unload();
+            //$('#selAdditionalCategories').val([]);
+            //loadSumoSelect();
         }
 
         function loadCategories() {
             $.getJSON("categories/getCategories.php", function (result) {
                 var categories = result.Categories;
+                var categoriesData = [];
                 $.each(categories, function (i, value) {
-                    $('#selPrimaryCategory').append($('<option>').text(value.CategoryList).attr('value', value.CategoryList));
-                    $('#selAdditionalCategories').append($('<option>').text(value.CategoryList).attr('value', value.CategoryList));
+                    //$('#selAdditionalCategories').append($('<option>').text(value.CategoryList).attr('value', value.CategoryList));
+                    
+                    categoriesData.push({ label: value.CategoryList, value: value.CategoryList });
                 });
-                loadSumoSelect();
+                //loadSumoSelect();
+                $("#ddlPrimaryCat").multiselect('dataprovider', categoriesData);
             })
             .error(function (data) {
                 console.log("Error!");
@@ -227,15 +260,12 @@
             <div class="tab-pane" id="categories">
                 <div class="panel panel-default">
                     <div class="panel-body">
-
                         <div class="row">
                             <div class="col-md-2">
-                                <label for="selPrimaryCategory">Primary Category</label>
+                                <label for="ddlPrimaryCat">Primary Category</label>
                             </div>
                             <div class="col-md-10">
-                                <select id="selPrimaryCategory" class="form-control">
-                                    <option value="">Select ...</option>
-                                </select>
+                                <select id="ddlPrimaryCat" class="multiselect" multiple="multiple" title="None selected"></select>
                             </div>
                         </div>
 
