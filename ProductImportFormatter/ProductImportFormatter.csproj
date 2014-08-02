@@ -92,9 +92,6 @@
     <Content Include="octicons\LICENSE.txt" />
     <Content Include="octicons\octicons.css" />
     <Content Include="octicons\octicons.svg" />
-    <Content Include="sumoselect\jquery.sumoselect.js" />
-    <Content Include="sumoselect\jquery.sumoselect.min.js" />
-    <Content Include="sumoselect\sumoselect.css" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>

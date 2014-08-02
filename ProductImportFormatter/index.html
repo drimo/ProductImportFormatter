@@ -7,12 +7,10 @@
     <script type="text/javascript" src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="js/ZeroClipboard.min.js"></script>
     <script type="text/javascript" src="js/bootstrap-multiselect.js"></script>
-    <script type="text/javascript" src="sumoselect/jquery.sumoselect.min.js"></script>
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
     <link rel="stylesheet" href="octicons/octicons.css" /> <!--https://octicons.github.com/-->
     <link rel="stylesheet" href="css/bootstrap-multiselect.css" />
-    <link rel="stylesheet" href="sumoselect/sumoselect.css" />
     <link rel="stylesheet" href="css/style.css" />
     <script>
 
@@ -77,10 +75,10 @@
                 //event that handles the copying to the clipboard
                 catClient.on('copy', function (event) {
                     var data = $('#ddlPrimaryCat').val()[0];
-                    //var additional = $('select.SlectBox')[0].sumo.getSelStr();
-                    //if (additional) {
-                    //    data = data + '|' + additional;
-                    //}
+                    var additional = $('#ddlAdditionalCats').val();
+                    additional.forEach(function (item) {
+                        data = data + '|' + item;
+                    });
                     event.clipboardData.setData('text/plain', data);
                 });
 
@@ -120,10 +118,15 @@
                 }
             });
 
+            $('#ddlAdditionalCats').multiselect({
+                buttonWidth: '100%',
+                maxHeight: 300,
+                enableFiltering: true,
+                enableCaseInsensitiveFiltering: true,
+                filterPlaceholder: 'Search'
+            });
+
             loadCategories();
-            
-
-
         });
 
         function multiselect_deselectAll($el) {
@@ -138,39 +141,21 @@
 
         function categoryReset() {
             multiselect_deselectAll($('#ddlPrimaryCat'));
-            
-            //$('select.SlectBox')[0].sumo.unload();
-            //$('#selAdditionalCategories').val([]);
-            //loadSumoSelect();
+            multiselect_deselectAll($('#ddlAdditionalCats'));
         }
 
         function loadCategories() {
             $.getJSON("categories/getCategories.php", function (result) {
                 var categories = result.Categories;
                 var categoriesData = [];
-                $.each(categories, function (i, value) {
-                    //$('#selAdditionalCategories').append($('<option>').text(value.CategoryList).attr('value', value.CategoryList));
-                    
+                $.each(categories, function (i, value) { 
                     categoriesData.push({ label: value.CategoryList, value: value.CategoryList });
                 });
-                //loadSumoSelect();
                 $("#ddlPrimaryCat").multiselect('dataprovider', categoriesData);
+                $("#ddlAdditionalCats").multiselect('dataprovider', categoriesData);
             })
             .error(function (data) {
                 console.log("Error!");
-            });
-        }
-
-        function loadSumoSelect() {
-            /* SumoSelect
-            Documentation: http://hemantnegi.github.io/jquery.sumoselect/
-            Demos: http://hemantnegi.github.io/jquery.sumoselect/sumoselect_demo.html
-            */
-            $('.SlectBox').SumoSelect({
-                placeholder: 'Select Multiple...',
-                outputAsCSV: true,
-                csvSepChar: '|',
-                okCancelInMulti: true
             });
         }
 
@@ -271,11 +256,10 @@
 
                         <div class="row inputRow">
                             <div class="col-md-2">
-                                <label for="selAdditionalCategories">Additional Categories</label>
+                                <label for="ddlAdditionalCats">Additional Categories</label>
                             </div>
                             <div class="col-md-10">
-                                <select id="selAdditionalCategories" class="SlectBox form-control" multiple="multiple">
-                                </select>
+                                <select id="ddlAdditionalCats" class="multiselect" multiple="multiple" title="None selected"></select>
                             </div>
                         </div>
 
