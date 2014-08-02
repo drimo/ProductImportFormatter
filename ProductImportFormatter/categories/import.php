@@ -56,7 +56,9 @@
 									$handle = fopen($_FILES['filename']['tmp_name'], "r");
 
 									while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-										$import="INSERT into Categories(CategoryId,CategoryList) values('$data[0]','$data[10]')";
+										$categoryId = mysql_real_escape_string($data[0]);
+										$categoryLookup = mysql_real_escape_string($data[10]);
+										$import="INSERT into Categories(CategoryId,CategoryList) values('$categoryId','$categoryLookup')";
 
 										mysql_query($import) or die(mysql_error());
 									}
