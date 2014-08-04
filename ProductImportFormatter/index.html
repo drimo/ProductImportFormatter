@@ -77,7 +77,10 @@
                     var data = $('#ddlPrimaryCat').val()[0];
                     var additional = $('#ddlAdditionalCats').val();
                     additional.forEach(function (item) {
-                        data = data + '|' + item;
+                        //Remove duplicates
+                        if (data.indexOf(item) == -1) {
+                            data = data + '|' + item;
+                        }
                     });
                     event.clipboardData.setData('text/plain', data);
                 });
