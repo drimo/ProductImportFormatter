@@ -56,11 +56,14 @@
 									$handle = fopen($_FILES['filename']['tmp_name'], "r");
 
 									while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-										$categoryId = mysql_real_escape_string($data[0]);
-										$categoryLookup = mysql_real_escape_string($data[10]);
-										$import="INSERT into Categories(CategoryId,CategoryList) values('$categoryId','$categoryLookup')";
+										if ($data[0] != "CategoryId" && $data[10] != "CategoryLookup")
+										{
+											$categoryId = mysql_real_escape_string($data[0]);
+											$categoryLookup = mysql_real_escape_string($data[10]);
+											$import="INSERT into Categories(CategoryId,CategoryList) values('$categoryId','$categoryLookup')";
 
-										mysql_query($import) or die(mysql_error());
+											mysql_query($import) or die(mysql_error());
+										}
 									}
 
 									fclose($handle);
